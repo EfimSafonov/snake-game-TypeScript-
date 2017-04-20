@@ -8,7 +8,7 @@ interface point {
 
 class Snake {
     private _gameField: HTMLElement = document.getElementById("game-field");
-    private _gameSpeed: number = 500;
+    private _gameSpeed: number = 400;
     private _fieldSize: point = {x : 10 , y : 10};
     private _food: point;
     private _body: point[] = [];
@@ -32,25 +32,26 @@ class Snake {
         document.addEventListener("keydown", this._onKeyDownHandler);
         this.createHead();
         this.generateApple();
-        if (this._state) {
-            setInterval(()=>this.loop(), this._gameSpeed);
-        } else {
-            console.log("VSOSAL");
-        }
+        setInterval(()=>this.loop(), this._gameSpeed);
     }
     private loop() {
+        if (this._state) {
             this.move();
             this.render();
+            this.checkLose();
+        } else {
+
+        }
     }
 
     private onKeyDownHandler(e: KeyboardEvent) {
-        if (e.key == "ArrowUp") {
+        if (e.key == "ArrowUp" && this._direction != 2) {
             this._direction = 0;
-        } else if (e.key == "ArrowDown") {
+        } else if (e.key == "ArrowDown" && this._direction != 0) {
             this._direction = 2;
-        } else if (e.key == "ArrowRight") {
+        } else if (e.key == "ArrowRight" && this._direction != 1) {
             this._direction = 3;
-        } else if (e.key == "ArrowLeft") {
+        } else if (e.key == "ArrowLeft" && this._direction != 3) {
             this._direction = 1;
         }
 
@@ -110,7 +111,6 @@ class Snake {
                 this._body[i] = this._body[i-1];
             }
             this._body[0] = point;
-            console.log(this._body);
         }
     }
 
@@ -118,6 +118,16 @@ class Snake {
         let x = Math.floor(Math.random() * 9);
         let y = Math.floor(Math.random() * 9);
         this._body.push({x : x,y : y});
+    }
+
+    private checkLose() {
+        for (let bodyCell in this._body) {
+            console.log("check" + bodyCell);
+            if (this._body[bodyCell].x == this._body[0].x && this._body[bodyCell].y == this._body[0].y && bodyCell != "0") {
+                console.log("h" + this._body[0] + this._body[bodyCell]);
+                this._state = false;
+            }
+        }
     }
 
     private checkCell(x : number, y : number){
@@ -137,7 +147,6 @@ class Snake {
             _y = Math.floor(Math.random() * 9);
         } while (this.checkCell(_x,_y));
         this._food = {x : _x, y : _y};
-        console.log(this._food);
     }
 
 }
